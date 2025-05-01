@@ -9,7 +9,9 @@ app.use(morgan("dev")); // 5 types: dev, combined, short, common, tiny
 app.use(helmet());
 app.use(compression());
 // init db
-
+require("./dbs/init.mongodb");
+const { checkOverload } = require("../src/helpers/check.connect");
+checkOverload();
 // init routes
 app.get("/", (req, res, next) => {
   const helloStr = "Hello!";

@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "compression": "^1.8.0",
-    "helmet": "^8.1.0"
+    "helmet": "^8.1.0",
+    "mongoose": "^8.14.1"
   }
 }
