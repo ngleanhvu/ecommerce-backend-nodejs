@@ -9,16 +9,11 @@ const app = express();
 app.use(morgan("dev")); // 5 types: dev, combined, short, common, tiny
 app.use(helmet());
 app.use(compression());
+app.use(express.json());
 // init db
 require("./dbs/init.mongodb");
 // init routes
-app.get("/", (req, res, next) => {
-  const helloStr = "Hello!";
-  return res.status(200).json({
-    message: "Welcome!",
-    metadata: helloStr.repeat(200000),
-  });
-});
+app.use("/", require("./routers"));
 // handle errors
 
 module.exports = app;
