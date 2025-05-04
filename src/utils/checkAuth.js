@@ -1,5 +1,6 @@
 "use strict";
 
+const { BadRequestError } = require("../core/errror.response");
 const { findById } = require("../services/apikey.service");
 
 const HEADER = {
@@ -8,40 +9,27 @@ const HEADER = {
 };
 
 const apiKey = async (req, res, next) => {
-  try {
-    const key = req.headers[HEADER.API_KEY];
-    if (!key) {
-      return res.status(403).json({
-        message: "Forbidden Error",
-      });
-    }
-    // Check objKey
-    const objKey = await findById(key.toString());
-    if (!objKey) {
-      return res.status(403).json({
-        message: "Forbidden Error",
-      });
-    }
-    req.objKey = objKey;
-    return next();
-  } catch (error) {
-    next(error);
+  const key = req.headers[HEADER.API_KEY];
+  if (!key) {
+    throw new BadRequestError("Error: Api key not found in header");
   }
+  // Check objKey
+  const objKey = await findById(key.toString());
+  if (!objKey) {
+    throw new BadRequestError("Error: Key not found");
+  }
+  req.objKey = objKey;
+  return next();
 };
 
 const checkPermission = (permission) => {
   return (req, res, next) => {
     if (!req.objKey.permissions) {
-      return res.status(403).json({
-        message: "Forbidden Error",
-      });
+      throw new BadRequestError("Error: Permission not found in api key");
     }
-    console.log(`keypermission::`, req.objKey.permissions);
     const validPermission = req.objKey.permissions.includes(permission);
     if (!validPermission) {
-      return res.status(403).json({
-        message: "Forbidden Error",
-      });
+      throw new BadRequestError("Error: Invalid permission");
     }
     return next();
   };
