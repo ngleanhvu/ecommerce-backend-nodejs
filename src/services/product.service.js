@@ -1,19 +1,28 @@
 'use strict'
 
 const { BadRequestError } = require('../core/errror.response')
-const {product, electronic, clothing} = require('../models/product.model')
+const {product, electronic, clothing, furniture} = require('../models/product.model')
 
 // define class Factory patten to  create new product
 class ProductService {
+    static productRegistry = {}
+    static registerProductType(type, classRef) {
+        ProductService.productRegistry[type] = classRef
+    }
     static async createProduct (type, payload) {
-        switch(type) {
-            case 'Electronic': 
-                return new Electronic(payload).createElectronic()
-            case 'Clothing':
-                return new Clothing(payload).createClothing()
-            default:
-                throw new BadRequestError("Invalid Product Types: "+type)
-        }
+        const productClass = ProductService.registerProductType[type]
+        if (!productClass) throw new BadRequestError(`Invalid product class ${productClass}`)
+        return new productClass(payload).createProduct()
+        // switch(type) {
+        //     case 'Electronic': 
+        //         return new Electronic(payload).createElectronic()
+        //     case 'Clothing':
+        //         return new Clothing(payload).createClothing()
+        //     case 'Furniture': 
+        //         return new Furniture(payload).createFurniture()
+        //     default:
+        //         throw new BadRequestError("Invalid Product Types: "+type)
+        // }
     }
 }
 
@@ -71,5 +80,24 @@ class Electronic extends Product {
         return newProduct
     }
 }
+
+class Furniture extends Product {
+    async createFurniture () {
+        const newFurniture = await furniture.create({
+            ...this.product_attributes,
+            product_shop: this.product_shop
+        })
+        if(!newFurniture) throw new BadRequestError("Create Clothing error")
+        const newProduct = await super.createProduct(newFurniture._id)
+        if(!newProduct) throw new BadRequestError("Create Product error")
+        return newProduct
+    }
+}
+
+ProductService.registerProductType('Electronic', Electronic)
+ProductService.registerProductType('Furniture', Furniture)
+ProductService.registerProductType('Clothing', Clothing)
+
+
 
 module.exports = ProductService
