@@ -156,7 +156,7 @@ class AccessService {
       $addToSet: {
         refreshTokensUsed: refreshToken // add to refresh token blacklist
       }
-    })
+    })  
 
     return {
       user: {userId, email},
