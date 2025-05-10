@@ -13,9 +13,7 @@ const {
   ConflictRequestError,
 } = require("../core/errror.response");
 const { random } = require("lodash");
-const keytokenModel = require("../models/keytoken.model");
-const KeyTokenService = require("./keytoken.service");
-
+const keyTokenModel = require('../models/keytoken.model')
 const RoleShop = {
   SHOP: "SHOP",
   WRITER: "WRITER",
@@ -126,7 +124,6 @@ class AccessService {
   
   static handleRefreshToken = async (refreshToken) => {
     // check token is used  
-    console.log(11)
     console.log(refreshToken)
     const foundToken = await keyTokenService.findByRefreshTokenUsed(refreshToken)
     if(foundToken) {
@@ -160,6 +157,42 @@ class AccessService {
 
     return {
       user: {userId, email},
+      tokens
+    }
+  }
+
+   static handleRefreshTokenV2 = async ({refreshToken, user, keyStore}) => {
+    // check token is used  
+    const {userId, email} = user
+
+    if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+      await keyTokenService.deleteKeyById(userId)
+      throw new BadRequestError('Something was wrong! Please try again!')
+    }
+
+    if (keyStore.refreshToken !== refreshToken) {
+      throw new BadRequestError("Shop not registered!")
+    }
+
+    const foundShop = await findByEmail({email})
+    if(!foundShop) throw new BadRequestError('Shop not registered!')
+    
+    const tokens = await createTokenPair(
+      {userId, email},
+      keyStore.publicKey,
+      keyStore.privateKey
+    )
+    // update token
+    await keyTokenModel.updateOne(
+      { _id: keyStore._id },
+      {
+        $set: { refreshToken: tokens.refreshToken },
+        $addToSet: { refreshTokensUsed: refreshToken }
+      }
+    )
+
+    return {
+      user,
       tokens
     }
   }
