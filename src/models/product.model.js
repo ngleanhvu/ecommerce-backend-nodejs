@@ -1,10 +1,10 @@
-const {model, Schema} = require('mongoose')
-const { collection } = require('./shop.model')
+const { model, Schema } = require('mongoose');
 
-const DOCUMENT_NAME = "Product"
-const COLLECTION_NAME = "Products"
+const DOCUMENT_NAME = "Product";
+const COLLECTION_NAME = "Products";
 
-const productSchema = model.Schema({
+// Product schema
+const productSchema = new Schema({
     product_name: {
         type: String,
         required: true
@@ -29,7 +29,10 @@ const productSchema = model.Schema({
         required: true,
         enum: ['Electronics', "Clothing", "Furniture"]
     },
-    product_shop: {type: Schema.Types.ObjectId, ref: "User"},
+    product_shop: { 
+        type: Schema.Types.ObjectId, 
+        ref: "User" 
+    },
     product_attributes: {
         type: Schema.Types.Mixed,
         required: true
@@ -37,33 +40,43 @@ const productSchema = model.Schema({
 }, {
     collection: COLLECTION_NAME,
     timestamps: true
-})
+});
 
-const clothingSchema = model.Schema({
+// Clothing schema
+const clothingSchema = new Schema({
     brand: {
         type: String
     },
     material: String,
-    size: String
+    size: String,
+    product_shop: {
+        type: Schema.Types.ObjectId,
+        ref: 'Shop'
+    }
 }, {
     collection: "clothes",
     timestamps: true
-})
+});
 
-const electronicSchema = model.Schema({
+// Electronic schema
+const electronicSchema = new Schema({
     manufacturer: {
         type: String,
         required: true
     }, 
     color: String,
-    model: String
+    model: String,
+    product_shop: {
+        type: Schema.Types.ObjectId,
+        ref: 'Shop'
+    }
 }, {
     collection: "electronics",
     timestamps: true
-})
+});
 
 module.exports = {
     product: model(DOCUMENT_NAME, productSchema),
     electronic: model("Electronics", electronicSchema),
-    clothing: model('Clothing', clothingSchema)
-}
+    clothing: model("Clothing", clothingSchema)
+};
