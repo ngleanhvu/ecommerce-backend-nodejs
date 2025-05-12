@@ -70,6 +70,12 @@ const productSchema = new Schema({
     timestamps: true
 });
 
+// Document middleware: run before .save() and .create() // other: pre, post, validate, remove, deleteOne, deleteMany.....
+productSchema.pre('save', function(next) {
+    this.product_slug = slugify(this.product_slug, {lower: true})
+    next()
+})
+
 // Clothing schema
 const clothingSchema = new Schema({
     brand: {
