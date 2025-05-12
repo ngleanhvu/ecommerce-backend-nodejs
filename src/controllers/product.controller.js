@@ -67,6 +67,13 @@ class ProductController {
             )
         }).send(res)
     }
+
+    findAllProducts = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Find all products success",
+            metadata: await ProductService.findAllProducts(req.params)
+        }).send(res)
+    }
  }
 
 module.exports = new ProductController()
