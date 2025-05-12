@@ -2,6 +2,7 @@
 
 const { BadRequestError } = require('../core/errror.response')
 const {product, electronic, clothing, furniture} = require('../models/product.model')
+const {findAllDraftForShop, findAllPublishForShop, publishProductByShop, unPublishProductByShop} = require('../repository/product.repository')
 
 // define class Factory patten to  create new product
 class ProductService {
@@ -13,16 +14,20 @@ class ProductService {
         const productClass = ProductService.productRegistry[type]
         if (!productClass) throw new BadRequestError(`Invalid product class ${productClass}`)
         return new productClass(payload).createProduct()
-        // switch(type) {
-        //     case 'Electronic': 
-        //         return new Electronic(payload).createElectronic()
-        //     case 'Clothing':
-        //         return new Clothing(payload).createClothing()
-        //     case 'Furniture': 
-        //         return new Furniture(payload).createFurniture()
-        //     default:
-        //         throw new BadRequestError("Invalid Product Types: "+type)
-        // }
+    }
+    static async findAllDraftForShop({product_shop, limit = 50, skip=0}) {
+        const query = {product_shop, isDraft: true}
+        return await findAllDraftForShop({query, limit, skip})
+    }
+    static async findAllPublishForShop({product_shop, limit = 50, skip=0}) {
+        const query = {product_shop, isPublished: true}
+        return await findAllPublishForShop({query, limit, skip})
+    }
+    static async publishProductByShop ({product_shop, product_id}) {
+        return publishProductByShop({product_shop, product_id})
+    }
+    static async unPublishProductByShop ({product_shop, product_id}) {
+        return unPublishProductByShop({product_shop, product_id})
     }
 }
 
@@ -75,7 +80,7 @@ class Electronic extends Product {
             product_shop: this.product_shop
         })
         if(!newElectronic) throw new BadRequestError("Create Clothing error")
-        const newProduct = await super.createProduct(newClothing._id)
+        const newProduct = await super.createProduct(newElectronic._id)
         if(!newProduct) throw new BadRequestError("Create Product error")
         return newProduct
     }

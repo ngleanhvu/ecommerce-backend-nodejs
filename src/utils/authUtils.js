@@ -88,6 +88,7 @@ const authenticationV2 = async (req, res, next) => {
     const decodeUser = JWT.verify(accessToken, keyStore.publicKey)
     if(userId !== decodeUser.userId) throw BadRequestError('Invalid UserId') 
     req.keyStore = keyStore
+    req.user = decodeUser
     return next()
   } catch(err) {
     throw err

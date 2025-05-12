@@ -1,5 +1,6 @@
 const { model, Schema } = require('mongoose');
 const { collection } = require('./shop.model');
+const slugify = require('slugify')
 
 const DOCUMENT_NAME = "Product";
 const COLLECTION_NAME = "Products";
@@ -35,7 +36,7 @@ const productSchema = new Schema({
     },
     product_shop: { 
         type: Schema.Types.ObjectId, 
-        ref: "User" 
+        ref: "Shop" 
     },
     product_attributes: {
         type: Schema.Types.Mixed,
@@ -72,7 +73,7 @@ const productSchema = new Schema({
 
 // Document middleware: run before .save() and .create() // other: pre, post, validate, remove, deleteOne, deleteMany.....
 productSchema.pre('save', function(next) {
-    this.product_slug = slugify(this.product_slug, {lower: true})
+    this.product_slug = slugify(this.product_name, {lower: true})
     next()
 })
 
