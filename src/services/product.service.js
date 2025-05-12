@@ -3,7 +3,7 @@
 const { BadRequestError } = require('../core/errror.response')
 const {product, electronic, clothing, furniture} = require('../models/product.model')
 const {findAllDraftForShop, findAllPublishForShop, publishProductByShop, 
-    unPublishProductByShop, searchProduct, findAllProducts} = require('../repository/product.repository')
+    unPublishProductByShop, searchProduct, findAllProducts, findProduct} = require('../repository/product.repository')
 // define class Factory patten to  create new product
 class ProductService {
     static productRegistry = {}
@@ -35,6 +35,9 @@ class ProductService {
     static async findAllProducts({limit = 50, sort = "ctime", page = 1, filter = {isPublished: true}}) {
         return await findAllProducts({limit, sort, page, filter, 
             select: ['product_name', 'product_price', 'product_thumb']})
+    }
+    static async findProduct({product_id}) {
+        return await findProduct({product_id, unSelect: ['__v']})
     }
 }
 

@@ -2,7 +2,7 @@
 
 const {product, electronic, furniture, clothing} = require('../models/product.model')
 const {Types, model} = require('mongoose')
-const { getSelectedData } = require('../utils')
+const { getSelectedData, unGetSelectData } = require('../utils')
 
 const findAllDraftForShop = async ({query, limit, skip}) => {
     return await queryProduct({query,limit,product})
@@ -65,6 +65,12 @@ const findAllProducts = async ({limit,sort,page,filter, select}) => {
     return products
 }
 
+const findProduct = async ({product_id, unSelect}) => {
+    return await product.findById(product_id)
+                        .select(unGetSelectData(unSelect))
+                        .lean()
+}
+
 const queryProduct = async ({query, limit, skip}) => {
     return await product.find(query)
                         .populate('product_shop', 'name email -_id') // join with Shop // same JOIN in SQL
@@ -82,5 +88,6 @@ module.exports = {
     findAllPublishForShop,
     unPublishProductByShop,
     searchProduct,
-    findAllProducts
+    findAllProducts,
+    findProduct
 }
