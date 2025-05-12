@@ -1,7 +1,7 @@
 'use strict'
 
 const {product, electronic, furniture, clothing} = require('../models/product.model')
-const {Types} = require('mongoose')
+const {Types, model} = require('mongoose')
 
 const findAllDraftForShop = async ({query, limit, skip}) => {
     return await queryProduct({query,limit,product})
@@ -41,6 +41,17 @@ const unPublishProductByShop = async ({product_shop, product_id}) => {
     return modifiedCount
 }
 
+const searchProduct = async ({keyword}) => {
+    const regexSearch = new RegExp(keyword)
+    const results = await product.find({
+        isPublished: true,
+        $text: {$search: regexSearch}},  
+        {score: {$meta: 'textScore'}})
+        .sort({score: {$meta: 'textScore'}})
+        .lean()
+    return results
+}
+
 const queryProduct = async ({query, limit, skip}) => {
     return await product.find(query)
                         .populate('product_shop', 'name email -_id') // join with Shop // same JOIN in SQL
@@ -56,5 +67,6 @@ module.exports = {
     findAllDraftForShop,
     publishProductByShop,
     findAllPublishForShop,
-    unPublishProductByShop
+    unPublishProductByShop,
+    searchProduct
 }

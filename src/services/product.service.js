@@ -2,7 +2,7 @@
 
 const { BadRequestError } = require('../core/errror.response')
 const {product, electronic, clothing, furniture} = require('../models/product.model')
-const {findAllDraftForShop, findAllPublishForShop, publishProductByShop, unPublishProductByShop} = require('../repository/product.repository')
+const {findAllDraftForShop, findAllPublishForShop, publishProductByShop, unPublishProductByShop, searchProduct} = require('../repository/product.repository')
 
 // define class Factory patten to  create new product
 class ProductService {
@@ -28,6 +28,9 @@ class ProductService {
     }
     static async unPublishProductByShop ({product_shop, product_id}) {
         return unPublishProductByShop({product_shop, product_id})
+    }
+    static async searchProduct({keyword}) {
+        return searchProduct({keyword})
     }
 }
 

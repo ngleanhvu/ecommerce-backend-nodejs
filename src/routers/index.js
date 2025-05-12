@@ -8,7 +8,7 @@ const { apiKey, checkPermission } = require("../utils/checkAuth");
 // check permissions
 // router.use(checkPermission("0000"));
 
-router.use("/v1/api/", require("./access"));
 router.use("/v1/api/shop/products", require('./product'))
+router.use("/v1/api/", require("./access"));
 
 module.exports = router;
