@@ -71,6 +71,10 @@ const productSchema = new Schema({
     timestamps: true
 });
 
+// Create index for search
+
+productSchema.index({product_name: "text", product_desc: "text"})
+
 // Document middleware: run before .save() and .create() // other: pre, post, validate, remove, deleteOne, deleteMany.....
 productSchema.pre('save', function(next) {
     this.product_slug = slugify(this.product_name, {lower: true})
