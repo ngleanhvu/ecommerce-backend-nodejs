@@ -10,7 +10,7 @@ class ProductService {
         ProductService.productRegistry[type] = classRef
     }
     static async createProduct (type, payload) {
-        const productClass = ProductService.registerProductType[type]
+        const productClass = ProductService.productRegistry[type]
         if (!productClass) throw new BadRequestError(`Invalid product class ${productClass}`)
         return new productClass(payload).createProduct()
         // switch(type) {
@@ -56,7 +56,7 @@ class Product {
 
 // define sub-class for different product types Clothing
 class Clothing extends Product {
-    async createClothing () {
+    async createProduct () {
         const newClothing = await clothing.create({
             ...this.product_attributes,
             product_shop: this.product_shop
@@ -69,7 +69,7 @@ class Clothing extends Product {
 }
     
 class Electronic extends Product {
-    async createElectronic () {
+    async createProduct () {
         const newElectronic = await electronic.create({
             ...this.product_attributes,
             product_shop: this.product_shop
@@ -82,7 +82,7 @@ class Electronic extends Product {
 }
 
 class Furniture extends Product {
-    async createFurniture () {
+    async createProduct () {
         const newFurniture = await furniture.create({
             ...this.product_attributes,
             product_shop: this.product_shop
@@ -97,7 +97,5 @@ class Furniture extends Product {
 ProductService.registerProductType('Electronic', Electronic)
 ProductService.registerProductType('Furniture', Furniture)
 ProductService.registerProductType('Clothing', Clothing)
-
-
 
 module.exports = ProductService
