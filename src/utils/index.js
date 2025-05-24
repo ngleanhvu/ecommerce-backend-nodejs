@@ -2,6 +2,7 @@
 
 const res = require("express/lib/response");
 const _ = require("lodash");
+const mongoose = require("mongoose");
 
 const getInfoData = ({ object = {}, fields = [] }) => {
   return _.pick(object, fields);
@@ -39,10 +40,13 @@ const updateNestedObjectParser = (obj) => {
   return final;
 };
 
+const convertToObjectIdMongodb = (id) => mongoose.Types.ObjectId(id);
+
 module.exports = {
   getInfoData,
   getSelectedData,
   unGetSelectData,
   removeUndefineObject,
   updateNestedObjectParser,
+  convertToObjectIdMongodb,
 };
